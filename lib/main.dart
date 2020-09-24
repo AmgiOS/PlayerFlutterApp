@@ -26,14 +26,17 @@ class Player extends StatefulWidget {
 
 class _Player extends State<Player> {
 
-  // Properties
+  // Private Properties
 
   List<Music> songList = [
     Music("Theme Swift", "Codabee", "assets/un.jpg", "https://codabee.com/wp-content/uploads/2018/06/un.mp3"),
-    Music("Second Theme", "Eikichi", "assets/deux.jpg", "https://codabee.com/wp-content/uploads/2018/06/deux.mp3")
+    Music("mets le shit dans l'ocb", "Eikichi", "assets/deux.jpg", "https://codabee.com/wp-content/uploads/2018/06/deux.mp3")
   ];
 
   Music currentMusic;
+  double position = 0.0;
+
+  // InitState
 
   @override
   void initState() {
@@ -49,61 +52,55 @@ class _Player extends State<Player> {
         backgroundColor: Colors.black87,
         centerTitle: false,
       ),
+      resizeToAvoidBottomPadding: false,
       body: Container(
         decoration: BoxDecoration(
             color: Colors.black54
         ),
-        child: Center(
+        child: SingleChildScrollView(
           child: Column(
             children: [
               Card(
                 color: Colors.transparent,
                 elevation: 10.0,
-                margin: EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
-                child: Image.asset('assets/un.jpg',
-                    fit: BoxFit.fitHeight),
+                margin: EdgeInsets.only(top: 5.0, left: 30.0, right: 30.0),
+                child: Image.asset(currentMusic.imagePath,
+                    fit: BoxFit.cover),
               ),
               Container(
-                margin: EdgeInsets.only(top: 20.0),
+                margin: EdgeInsets.only(top: 10.0),
                 child: setText(currentMusic.title, 25.0),
               ),
               Container(
-                margin: EdgeInsets.only(top: 15.0),
+                margin: EdgeInsets.only(top: 10.0),
                 child: setText(currentMusic.artist, 17.0),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.fast_rewind),
-                    onPressed: () {
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.play_arrow),
-                    iconSize: 80.0,
-                    onPressed: () {
-
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.fast_forward),
-                    onPressed: () {
-
-                    },
-                  ),
+                  setIconButton(Icons.fast_rewind, () {
+                    print('rewind');
+                  }),
+                  setIconButton(Icons.play_arrow, () {
+                    print('play');
+                  }, iconSize: 80.0),
+                  setIconButton(Icons.fast_forward, () {
+                    print("forward");
+                  }),
                 ],
               ),
-              Container(
-                margin: EdgeInsets.only(top: 10.0),
-                child: Slider(
-                  value: 0.0,
-                  max: 100.0,
-                  mouseCursor: MouseCursor.defer, onChanged: (double value) {
-
+              Slider(
+                value: 0.0,
+                min: 0.0,
+                max: 30.0,
+                inactiveColor: Colors.white,
+                activeColor: Colors.red,
+                onChanged: (double d) {
+                  setState(() {
+                    position = d;
+                  });
                 },
-                ),
-              )
+              ),
             ],
           ),
         ),
@@ -111,6 +108,7 @@ class _Player extends State<Player> {
     );
   }
 
+  // Public Methods
   Text setText(String title, double fontSize) {
     return Text(
       title,
@@ -118,6 +116,15 @@ class _Player extends State<Player> {
         color: Colors.white,
         fontSize: fontSize,
       ),
+    );
+  }
+
+  IconButton setIconButton(IconData icon, VoidCallback onPressed ,{double iconSize = 24.0}) {
+    return IconButton(
+      icon: Icon(icon),
+      color: Colors.white,
+      iconSize: iconSize,
+      onPressed: onPressed,
     );
   }
 }
