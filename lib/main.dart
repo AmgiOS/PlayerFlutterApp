@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:player_flutter/Music.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(PlayerHome());
@@ -34,7 +38,10 @@ class _Player extends State<Player> {
   ];
 
   Music currentMusic;
-  double position = 0.0;
+  Duration position = Duration(seconds: 0);
+  AudioPlayer audioPlayer;
+  StreamSubscription positionSub;
+  StreamSubscription stateSubscription;
 
   // InitState
 
@@ -90,14 +97,15 @@ class _Player extends State<Player> {
                 ],
               ),
               Slider(
-                value: 0.0,
+                value: position.inSeconds.toDouble(),
                 min: 0.0,
                 max: 30.0,
                 inactiveColor: Colors.white,
                 activeColor: Colors.red,
-                onChanged: (double d) {
+                onChanged: (double value) {
                   setState(() {
-                    position = d;
+                    Duration newDuration = Duration(seconds: value.toInt());
+                    position = newDuration;
                   });
                 },
               ),
@@ -126,5 +134,15 @@ class _Player extends State<Player> {
       iconSize: iconSize,
       onPressed: onPressed,
     );
+  }
+
+  configurationAudioPlayer() {
+    audioPlayer = AudioPlayer();
+    positionSub = audioPlayer.onAudioPositionChanged.listen((event) {
+      (position) => setState(() => position = position);
+    });
+    stateSubscription = audioPlayer.onPlayerStateChanged.listen((event) {
+
+    });
   }
 }
